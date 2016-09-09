@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
 struct Node{
 	struct Node *left, *right;
 	int *freq, *lines;
@@ -17,18 +16,18 @@ extern int *insertNode(Node **tree, char *word, int *freq, int *lines);
 
 int *insertNode(Node **tree, char *word, int *freq, int *lines)
 {
-	int i = 0;
-	while(word[i])
-	{
-		putchar(tolower(word[i]));
-		i++;
-	}
-
+	int c = 0;
+	while (word[c])
+ 	{
+		putchar(tolower(word[c]));
+      		c++;
+  	}
+	printf("\nTEMP CHAR:%s",word);
 	if(*tree == NULL)
 	{
 		Node *tmp = malloc(sizeof(*tmp));
 		tmp->key = strdup(word);
-		tmp->freq = freq;
+		tmp->freq = 1;
 		tmp->lines = lines;
 		tmp->left = NULL;
 		tmp->right = NULL;
@@ -38,17 +37,29 @@ int *insertNode(Node **tree, char *word, int *freq, int *lines)
 	else
 	{
 		Node *temp_tree = *tree;
+		printf("\ntemp_treek: %s word: %s", temp_tree->key,word);
 		int r = strcmp(temp_tree->key,word);
+		printf("\n%d",r);
 		if (r ==0)
 		{
+			
 			free(temp_tree->freq);
-			temp_tree->freq = freq + 1;
+			int temp = temp_tree->freq + 1;
+			printf("!!!!: %d\n",temp);
+			temp_tree->freq = temp_tree->freq + 1;
+			
 			return temp_tree->freq;
 		}
 		else if(r < 0)
+		{
+			printf("\nTEMP LEFT");
 			return insertNode(&temp_tree->right,word,freq,lines);
+		}
 		else
+		{
+			printf("\nTEMP Right");
 			return insertNode(&temp_tree->left,word,freq,lines);
+		}
 	}
 }
 			
@@ -71,10 +82,11 @@ int main(){
 
 	for(size_t i = 0; i < sizeof(words_temp) / sizeof(words_temp[0]);i++)
 	{
-		printf("%zu: Add %s =>\n", i, words_temp[i]);
-		int *freq = insertNode(&root, words_temp[i], 0,0);
+		printf("%zu: Add %s =>", i, words_temp[i]);
+		int *freq = malloc(sizeof *freq);
+		 freq = insertNode(&root, words_temp[i], 0,0);
 		dumpTree(root);
-		printf("New Freq: %s\n", freq);
+		printf("New Freq: %d\n", freq);
 	}
 	
 //	freeTree(root);
@@ -106,15 +118,4 @@ static void dumpTree(Node *root)
     if (root->right != 0)
         dumpTree(root->right);
 }
-
-
-
-
-
-
-
-
-
-
-
 
