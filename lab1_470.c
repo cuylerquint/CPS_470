@@ -9,7 +9,7 @@ struct Node{
 };
 
 typedef struct Node Node;
-
+static int read(FILE *fp);
 static void freeTree(Node *root);
 static void dumpTree(Node *root);
 extern int *insertNode(Node **tree, char *word, int freq, int lines);
@@ -54,32 +54,57 @@ int *insertNode(Node **tree, char *word, int freq, int lines)
 		}
 	}
 }
-			
-int main(){
-	FILE *fp;
-   	fp = fopen("/Users/cuyler/cps450_470/lab1_470_output.txt", "w+");
-   	fprintf(fp, "This is testing for fprintf...\n");
-   	fputs("This is testing for fputs...\n", fp);
-   	fclose(fp);
 	
-	Node *root = 0;
-
-	char *words_temp[]=
+int read(FILE *fp) {
+	int line_num = 1;
+	char c;
+	int found_word = 0;
+	while ((c =fgetc(fp)) != EOF )
 	{
-		{"cat"},	
-		{"dog"},
-		{"pizza"},
-		{"cat"},
-	};
-
-	for(size_t i = 0; i < sizeof(words_temp) / sizeof(words_temp[0]);i++)
-	{
-		printf("%zu: Add %s =>", i, words_temp[i]);
-		int *freq = malloc(sizeof *freq);
-		 freq = insertNode(&root, words_temp[i], 0,0);
-		dumpTree(root);
-		printf("New Freq: %d\n", freq);
+    		if (!isalpha(c))
+    		{	
+        		if (found_word) 
+			{
+            			putchar('\n');
+            			found_word = 0;
+        		}
+    		}
+    		else 
+		{
+        		found_word = 1;
+        		c = tolower(c);
+        		putchar(c);
+    		}	
 	}
+}
+
+		
+int main(){
+	FILE *fi, *fo;
+   	fo = fopen("/Users/cuyler/cps450_470/lab1_470_output.txt", "w+");
+   	fi = fopen("/Users/cuyler/cps450_470/lab1_470_input.txt", "r");
+   	fprintf(fo, "This is testing for fprintf...\n");
+   	fputs("This is testing for fputs...\n", fo);
+   	fclose(fo);
+	Node *root = 0;
+	read(fi);
+
+//	char *words_temp[]=
+//	{
+//		{"cat"},	
+//		{"dog"},
+//		{"pizza"},
+//		{"cat"},
+//	};
+//
+//	for(size_t i = 0; i < sizeof(words_temp) / sizeof(words_temp[0]);i++)
+//	{
+//		printf("%zu: Add %s =>", i, words_temp[i]);
+//		int *freq = malloc(sizeof *freq);
+//		 freq = insertNode(&root, words_temp[i], 0,0);
+//		dumpTree(root);
+//		printf("New Freq: %d\n", freq);
+//	}
 	
 //	freeTree(root);
 
