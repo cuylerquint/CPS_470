@@ -55,10 +55,11 @@ int *insertNode(Node **tree, char *word, int freq, int lines)
 	}
 }
 	
-int read(FILE *fp) {
+void read(FILE *fp) {
 	int line_num = 1;
 	char c;
 	int found_word = 0;
+	char *cur_word = "";
 	while ((c =fgetc(fp)) != EOF )
 	{
     		if (!isalpha(c))
@@ -67,12 +68,21 @@ int read(FILE *fp) {
 			{
             			putchar('\n');
             			found_word = 0;
+				printf("word: %s",cur_word);
+				
+				cur_word = "";
         		}
     		}
     		else 
 		{
         		found_word = 1;
         		c = tolower(c);
+			size_t len = strlen(cur_word);
+			char *str_temp = malloc(len + 1 + 1);
+			strcpy(str_temp,cur_word);
+			str_temp[len] = c;
+			str_temp[len + 1] = '\0';
+
         		putchar(c);
     		}	
 	}
