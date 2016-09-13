@@ -58,49 +58,41 @@ int *insertNode(Node **tree, char *word, int freq, int lines)
 	}
 }
 
-int stringtoken (Node * tree, char str[], int line)
-{
-	if(tree == NULL){printf("NULL TREE");}
-  	char * pch;
-  	pch = strtok (str," ,\n");
-  	while (pch != NULL)
-  	{
-    		size_t ln = strlen(pch) - 1;
-    		if (*pch  && pch[ln] == '\n') 
-    			pch[ln] = '\0';
-    		printf("\nsting: %s line: %d",pch,line); 
-		int *freq = malloc(sizeof *freq);
-		freq = insertNode(&tree, pch, 0,line);
-		printf("New Freq: %d\n", freq);
-		dumpTree(tree);
-    		pch = strtok (NULL, " ,.-");
-  	}
-  	return 0;
-}
 
-void read(Node *tree,FILE *f1){
-	char line[2000];
-	int i = 0;
-	if(f1 != NULL)
-	{
-		while(fgets(line,sizeof line , f1) !=NULL){
-			i++;
-			stringtoken(tree,line,i);
-		}
-	fclose(f1);
-	}
-}
 		
 int main(){
 	FILE *fi, *fo;
    	fo = fopen("/Users/cuyler/cps450_470/lab1_470_output.txt", "w+");
-   	fi = fopen("/Users/cuyler/cps450_470/temp_inpt.txt", "r");
+   	fi = fopen("/Users/cuyler/cps450_470/lab1_470_input.txt", "r");
    	fprintf(fo, "This is testing for fprintf...\n");
    	fputs("This is testing for fputs...\n", fo);
    	fclose(fo);
 	Node * root = 0;
-	read(root,fi);
-	dumpTree(root);
+	char line[2000];
+	int line_c = 0;
+	if(fi != NULL)
+	{
+		while(fgets(line,sizeof line , fi) !=NULL){
+			line_c++;
+		//	stringtoken(tree,line,i);
+			char * pch;
+  			pch = strtok (line," ,\n");
+  			while (pch != NULL)
+  			{
+    				size_t ln = strlen(pch) - 1;
+    				if (*pch  && pch[ln] == '\n') 
+    					pch[ln] = '\0';
+    				printf("\nsting: %s line: %d",pch,line_c); 
+				int *freq = malloc(sizeof *freq);
+				freq = insertNode(&root, pch, 0,line_c);
+				printf("New Freq: %d\n", freq);
+				dumpTree(root);
+    				pch = strtok (NULL, " ,.-");
+  			}	
+
+		}
+		fclose(fi);
+	}
 	print(root);
 //	Node * root = 0;
 //	char *words_temp[]=
@@ -129,7 +121,6 @@ int main(){
 
 static void print(Node *root)
 {
-	printf("HEHEHE");
 	if(root != NULL)
 	{
 		print(root->left);
