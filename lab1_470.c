@@ -19,14 +19,12 @@ struct Node{
 typedef struct Linked_node Linked_node;
 typedef struct Node Node;
 static void read(Node * tree,FILE *fp);
-static void freeTree(Node *root);
 static void dumpTree(Node *root);
 static void print(Node *root);
 extern int *insertNode(Node **tree, char *word, int freq, int lines);
 
 int *insertNode(Node **tree, char *word, int freq, int line_location)
 {
-//	printf("TOPKEY:   WORD: %s ",word);
 	for(int i = 0; word[i] != '\0';i++)
 		word[i] = tolower(word[i]);
 	if(strlen(word) == 0)
@@ -54,12 +52,17 @@ int *insertNode(Node **tree, char *word, int freq, int line_location)
 		int r = strcmp(temp_tree->key,word);
 		if (r ==0)
 		{
-//			free(temp_tree->freq);
 			temp_tree->freq +=1;
 			Linked_node * current = &temp_tree->line_list;
-			if(current->line != line_location)
+			Linked_node * cur = &temp_tree->line_list;
+			int max = 0;
+			while(cur != NULL)
+			{	
+				if(cur->line > max){max = cur->line;}
+				cur = cur->next;
+			}
+			if(max != line_location)
 			{
-				printf("HERE");
 				while(current->next != NULL)
 					current = current->next;
 				current->next = malloc(sizeof(Linked_node));
@@ -85,7 +88,7 @@ int *insertNode(Node **tree, char *word, int freq, int line_location)
 int main(){
 	FILE *fi, *fo;
    	fo = fopen("/Users/cuyler/cps450_470/lab1_470_output.txt", "w+");
-   	fi = fopen("/Users/cuyler/cps450_470/temp_inpt.txt", "r");
+   	fi = fopen("/Users/cuyler/cps450_470/lab1_470_input.txt", "r");
    	fprintf(fo, "This is testing for fprintf...\n");
    	fputs("This is testing for fputs...\n", fo);
    	fclose(fo);
@@ -118,7 +121,6 @@ int main(){
 		fclose(fi);
 	}
 	print(root);
-//	freeTree(root);
 
 	return 0;
 
@@ -140,20 +142,6 @@ static void print(Node *root)
 		}
 		print(root->right);
 	}
-}
-
-static void freeTree(Node *root)
-{
-    if (root != 0)
-    {
-        freeTree(root->left);
-        freeTree(root->right);
-        free(root->key);
-        free(root->freq);
-	free(root->line_list.line);
-	free(root->line_list.next);
-        free(root);
-    }
 }
 
 static void dumpTree(Node *root)
