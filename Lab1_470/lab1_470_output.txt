@@ -1,0 +1,14 @@
+
+a	freq: 3	lines: 1 2 
+if	freq: 1	lines: 2 
+is	freq: 1	lines: 3 
+of	freq: 3	lines: 1 2 
+peck	freq: 4	lines: 1 2 3 
+peppers	freq: 3	lines: 1 2 
+peter	freq: 4	lines: 1 2 3 
+picked	freq: 4	lines: 1 2 3 
+pickled	freq: 3	lines: 1 2 
+piper	freq: 4	lines: 1 2 3 
+that	freq: 1	lines: 3 
+the	freq: 1	lines: 3 
+where	freq: 1	lines: 3 
