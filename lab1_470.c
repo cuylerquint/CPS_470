@@ -4,7 +4,8 @@
 #include <ctype.h>
 struct Node{
 	struct Node *left, *right;
-	int freq, lines;
+	int freq;
+	int line_locations[1];
 	char *key;
 };
 
@@ -15,21 +16,17 @@ static void dumpTree(Node *root);
 static void print(Node *root);
 extern int *insertNode(Node **tree, char *word, int freq, int lines);
 
-int *insertNode(Node **tree, char *word, int freq, int lines)
+int *insertNode(Node **tree, char *word, int freq, int line_location)
 {
 //	printf("TOPKEY:   WORD: %s ",word);
-	int c = 0;
-//	while (word[c])
-// 	{
-//		putchar(tolower(word[c]));
-//      		c++;
-//  	}
+	for(int i = 0; word[i] != '\0';i++)
+		word[i] = tolower(word[i]);
 	if(*tree == NULL)
 	{
 		Node *tmp = malloc(sizeof(*tmp));
 		tmp->key = strdup(word);
 		tmp->freq = 1;
-		tmp->lines = lines;
+		tmp->line_locations[0] = line_location;
 		tmp->left = NULL;
 		tmp->right = NULL;
 		*tree = tmp;
@@ -38,7 +35,7 @@ int *insertNode(Node **tree, char *word, int freq, int lines)
 	else
 	{
 		Node *temp_tree = *tree;
-		printf("\nKEY: %s  WORD: %s ",temp_tree->key,word);
+//		printf("\nKEY: %s  WORD: %s ",temp_tree->key,word);
 		int r = strcmp(temp_tree->key,word);
 		if (r ==0)
 		{
@@ -49,11 +46,11 @@ int *insertNode(Node **tree, char *word, int freq, int lines)
 		}
 		else if(r < 0)
 		{
-			return insertNode(&temp_tree->right,word,freq,lines);
+			return insertNode(&temp_tree->right,word,freq,line_location);
 		}
 		else
 		{
-			return insertNode(&temp_tree->left,word,freq,lines);
+			return insertNode(&temp_tree->left,word,freq,line_location);
 		}
 	}
 }
@@ -80,7 +77,7 @@ int main(){
   			while (pch != NULL)
   			{
     				size_t ln = strlen(pch) - 1;
-    				if (*pch  && pch[ln] == '\n') 
+    				if ((*pch  && pch[ln] == '\n') ||( *pch && pch[ln] == '?')) 
     					pch[ln] = '\0';
     				printf("\nsting: %s line: %d",pch,line_c); 
 				int *freq = malloc(sizeof *freq);
@@ -124,7 +121,9 @@ static void print(Node *root)
 	if(root != NULL)
 	{
 		print(root->left);
-		printf("%s ... freq: %d, lines: %d\n",root->key,root->freq,root->lines);
+		printf("\n%s\tfreq: %d\tlines: ",root->key,root->freq);
+		for(size_t i = 0; i < sizeof(root->line_locations) / sizeof(root->line_locations[0]);i++)
+			printf("%d ",root->line_locations[i]);
 		print(root->right);
 	}
 }
@@ -137,7 +136,7 @@ static void freeTree(Node *root)
         freeTree(root->right);
         free(root->key);
         free(root->freq);
-        free(root->lines);
+        free(root->line_locations);
         free(root);
     }
 }
