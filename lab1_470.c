@@ -58,11 +58,16 @@ int *insertNode(Node **tree, char *word, int freq, int line_location)
 //			free(temp_tree->freq);
 			temp_tree->freq +=1;
 			Linked_node * current = &temp_tree->line_list;
-			while(current->next != NULL)
-				current = current->next;
-			current->next = malloc(sizeof(Linked_node));
-			current->next->line = line_location;
-			current->next->next = NULL;			
+			if(current->line != line_location)
+			{
+				printf("HERE");
+				while(current->next != NULL)
+					current = current->next;
+				current->next = malloc(sizeof(Linked_node));
+				printf("NEW LINE LOCATION IN LINKED:%d", line_location);
+				current->next->line = line_location;
+				current->next->next = NULL;			
+			}			
 			return temp_tree->freq;
 		}
 		else if(r < 0)
@@ -114,24 +119,6 @@ int main(){
 		fclose(fi);
 	}
 	print(root);
-//	Node * root = 0;
-//	char *words_temp[]=
-//	{
-//		{"cat"},	
-//		{"dog"},
-//		{"pizza"},
-//		{"cat"},
-//	};
-//
-//	for(size_t i = 0; i < sizeof(words_temp) / sizeof(words_temp[0]);i++)
-//	{
-//		printf("%zu: Add %s =>", i, words_temp[i]);
-//		int *freq = malloc(sizeof *freq);
-//		freq = insertNode(&root, words_temp[i], 0,0);
-//		dumpTree(root);
-//		printf("New Freq: %d\n", freq);
-//	}
-//	print(root);	
 //	freeTree(root);
 
 	return 0;
@@ -164,7 +151,8 @@ static void freeTree(Node *root)
         freeTree(root->right);
         free(root->key);
         free(root->freq);
-//	free(root->line_list);
+	free(root->line_list.line);
+	free(root->line_list.next);
         free(root);
     }
 }
@@ -177,4 +165,3 @@ static void dumpTree(Node *root)
     if (root->right != 0)
         dumpTree(root->right);
 }
-
