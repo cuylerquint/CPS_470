@@ -39,6 +39,7 @@ int *insertNode(Node **tree, char *word, int freq, int line_location)
 		tmp_list->next = NULL;
 		tmp->line_list = *tmp_list;
 		tmp->key = strdup(word);
+		tmp->freq = malloc(sizeof(int));
 		tmp->freq = 1;
 		tmp->left = NULL;
 		tmp->right = NULL;
@@ -48,8 +49,6 @@ int *insertNode(Node **tree, char *word, int freq, int line_location)
 	else
 	{
 		Node *temp_tree = *tree;
-//		int len = sizeof(temp_tree->line_locations)/sizeof(temp_tree->line_locations[0]);
-//		temp_tree = (Node*) realloc(*tree,((len + 1) * sizeof(Node)));
 		if(temp_tree == NULL)
 			return 0;
 		int r = strcmp(temp_tree->key,word);
@@ -86,7 +85,7 @@ int *insertNode(Node **tree, char *word, int freq, int line_location)
 int main(){
 	FILE *fi, *fo;
    	fo = fopen("/Users/cuyler/cps450_470/lab1_470_output.txt", "w+");
-   	fi = fopen("/Users/cuyler/cps450_470/lab1_470_input.txt", "r");
+   	fi = fopen("/Users/cuyler/cps450_470/temp_inpt.txt", "r");
    	fprintf(fo, "This is testing for fprintf...\n");
    	fputs("This is testing for fputs...\n", fo);
    	fclose(fo);
@@ -136,7 +135,7 @@ static void print(Node *root)
 		
 		while(cur != NULL)
 		{	
-		printf("%d ", root->line_list.line);
+			printf("%d ", cur->line);
 			cur = cur->next;
 		}
 		print(root->right);
