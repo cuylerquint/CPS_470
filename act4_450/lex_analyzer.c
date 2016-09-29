@@ -25,110 +25,79 @@ Act 4
 #include <ctype.h>
 
 
-void keyw(char *p);
 int i=0,id=0,kw=0,num=0,op=0;
-char keys[32][10]={"auto","break","case","char","const","continue","default",
-"do","double","else","enum","extern","float","for","goto",
-"if","int","long","register","return","short","signed",
-"sizeof","static","struct","switch","typedef","union",
-"unsigned","void","volatile","while"};
 
 
 int main(int argc, char **argv){
-	char ch,str[25],seps[15]=" \t\n,;(){}[]#\"<>",oper[]="!%^&*-+=~|.<>/?";
+	char ch;
+	char chars[4]= {'a','b','c','d'};
+	char opers[4]= {'/','*','-','+'};
 	int j;
-	char fname[50];
-
+	fpos_t pos;
+	int commented = 0;
 	FILE *fi, *fo;
 	fi = fopen(argv[1], "r");
 	fo = fopen(argv[2], "w+");
 	char line[2000];
 	int line_c = 0;
 
+	printf("\n\n ---New Tuple---"); 
+	fprintf(fo, "\n ---New Tuple---");
 	while((ch=fgetc(fi))!=EOF)
 	{
-		for(j=0;j<=14;j++)
+		if(commented == 1 && ch =='\n')
 		{
-			if(ch==oper[j])
+			commented = 0;
+			continue;
+		}
+		if(ch=='\n')
+		{
+			if(fgetc(fi)==EOF)
 			{
-				printf("%c is an operator\n",ch);
+				printf("\n\nEOF"); 
+				fprintf(fo,"\n\nEOF"); 
+				exit(1);
+			}	
+			printf("\n ---New Tuple---"); 
+			fprintf(fo, "\n ---New Tuple---");
+			continue;
+		}
+		if(ch=='/')
+		{
+			char tmp = fgetc(fi);	
+			if(tmp=='/')
+				printf("\nrest of line has been commeneted");
+				printf("\n\n ---New Tuple---"); 
+				fprintf(fo, "\\nrest of line has been commeneted\n ---New Tuple---");
+				commented = 1;
+				continue;				
+		}	
+		if(ch==' ' || ch=='\0')
+			continue;
+		for(j=0;j<4;j++)
+		{
+			
+			if(ch==opers[j])
+			{
+			
+				printf("\noperator : %c",ch);
+				fprintf(fo, "\noperator : %c",ch);
 				op++;
-				str[i]='\0';
-				keyw(str);
 			}
 		}
-		for(j=0;j<=14;j++)
+		for(j=0;j<4;j++)
 		{
-			if(i==-1)
-				break;
-			if(ch==seps[j])
+			if(ch==chars[j])
 			{
-				if(ch=='#')
-				{
-					while(ch!='>')
-					{
-						printf("%c",ch);
-						ch=fgetc(fi);
-					}
-					printf("%c is a header file\n",ch);
-					i=-1;
-					break;
-				}
-				if(ch=='"')
-				{
-					do
-					{
-						ch=fgetc(fi);
-						printf("%c",ch);
-					}while(ch!='"');
-					printf("\b is an argument\n");
-					i=-1;
-					break;
-				}
-				str[i]='\0';
-				keyw(str);
+				printf("\nvarible token : %c",ch);
+				fprintf(fo, "\nvarible token : %c",ch);
 			}
 		}
-		if(i!=-1)
-		{
-			str[i]=ch;
-			i++;
-		}		
-		else
-			i=0;
+		if(ch=='(')
+			printf("\nopen Parenthesis: %c",ch);
+			fprintf(fo, "\nopen Parenthesis: %c",ch);
+		if(ch==')')
+			printf("\nclose Parenthesis: %c",ch);
+			fprintf(fo, "\nclose Parenthesis: %c",ch);
 	}
-	printf("Keywords: %d\nIdentifiers: %d\nOperators: %d\nNumbers: %d\n",kw,id,op,num);
-//getch();
-}
-void keyw(char *p)
-{
-	int k,flag=0;
-	for(k=0;k<=31;k++)
-	{
-		if(strcmp(keys[k],p)==0)
-		{
-			printf("%s is a keyword\n",p);
-			kw++;
-			flag=1;
-			break;
-		}
-	}
-	if(flag==0)
-	{
-		if(isdigit(p[0]))
-		{
-			printf("%s is a number\n",p);
-			num++;
-		}
-		else
-		{
-			//if(p[0]!=13&&p[0]!=10)
-			if(p[0]!='\0')
-			{
-				printf("%s is an identifier\n",p);
-				id++;
-			}
-		}
-	}
-	i=-1;
 }
