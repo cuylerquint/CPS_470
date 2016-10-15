@@ -4,7 +4,8 @@ CPS 450
 Lab 1
 
 	Implement a raggedness caluator simular to TeX setting
-	where Raggedness of a file is calulated by (n - m)**2 sum of lines	     in a text fine. N is the lenght in charaters of longest line.
+	where Raggedness of a file is calulated by (n - m)**2 sum of lines
+	in a text fine. N is the lenght in charaters of longest line.
 
 	Running:
 		./a.out inpt.txt 
@@ -27,13 +28,12 @@ struct Linked_node {
 typedef struct Linked_node Linked_node;
 
 
-void append(Linked_node ** head, int val)
+void push(Linked_node ** head, int val)
 {	
 	Linked_node * temp = (Linked_node*) malloc(sizeof(Linked_node));
 	temp->data = val;
 	temp->next = *head;
 	*head = temp;
-	printf("\npushig : %d",val);
 }
 
 
@@ -47,15 +47,9 @@ int main(int argc, char **argv){
 	head->next = NULL;
 	while((ch=fgetc(fi))!=EOF)
 	{
-		if(ch == EOF)
-		{
-			printf("last line");
-			continue;
-		}
 		if(ch=='\n')
 		{
-			printf("new line");
-			push(head,cur_char_count);
+			push(&head,cur_char_count);
 			if(cur_char_count > max_char_count)
 			{
 				max_char_count = cur_char_count;
@@ -67,22 +61,20 @@ int main(int argc, char **argv){
 		{
 			cur_char_count++;
 		}
-		printf("\ncur: %d",cur_char_count);
 	}
 	Linked_node * temp = head;
 	while(temp->next != NULL)
 	{
-		printf("%d->",temp->data);
 		int j = 0;
-		if(temp->data < max_char_count)
+		if(temp->data ==  max_char_count)
 		{
-
-			j = (max_char_count - temp->data);
-			j = j*j;
+			j = temp->data;
 		}
 		else
 		{
-			j = temp->data;
+			j = (max_char_count - temp->data);
+			j = j*j;
+
 		}
 		
 		rag += j;
