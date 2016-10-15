@@ -1,0 +1,43 @@
+
+ ---New Tuple---
+open Parenthesis: (
+close Parenthesis: (
+varible token : a
+open Parenthesis: a
+close Parenthesis: a
+operator : +
+open Parenthesis: +
+close Parenthesis: +\nrest of line has been commeneted
+ ---New Tuple---
+operator : +
+open Parenthesis: +
+close Parenthesis: +
+open Parenthesis: )
+close Parenthesis: )
+open Parenthesis: 1
+close Parenthesis: 1
+open Parenthesis: 2
+close Parenthesis: 2
+open Parenthesis: 3
+close Parenthesis: 3
+open Parenthesis: 4
+close Parenthesis: 4
+open Parenthesis: 5
+close Parenthesis: 5
+open Parenthesis: 6
+close Parenthesis: 6
+open Parenthesis: (
+close Parenthesis: (
+varible token : a
+open Parenthesis: a
+close Parenthesis: a
+operator : +
+open Parenthesis: +
+close Parenthesis: +
+varible token : b
+open Parenthesis: b
+close Parenthesis: b
+open Parenthesis: )
+close Parenthesis: )
+
+EOF
