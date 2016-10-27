@@ -21,15 +21,22 @@ Lab 5
 #include <stdlib.h>
 #include <pthread.h>
 
-
-struct Process{   
+typedef struct{   
  	int pid;
 	int arrival;
 	int burst;
 	int priority;
-};
+	void (*execute)();
+}Process;
 
-typedef struct Process Process;
+void execute(Process * self, int quantum)
+{
+	printf("\nProcess: %d executeing for %d",self->pid,quantum);
+	sleep(quantum);	
+
+}
+
+//typedef struct Process Process;
 
 int main(){
     	FILE *fp;
@@ -45,6 +52,7 @@ int main(){
 			jobs[i].arrival = some_ints[1];
 			jobs[i].burst = some_ints[2];
 			jobs[i].priority = some_ints[3];
+			jobs[i].execute = &execute;
 			i += 1;
         	}
         	else 
@@ -55,6 +63,7 @@ int main(){
 	} 
 	for(int j = 0; j < 5; j ++){
 		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
-	
+		jobs[j].execute(&jobs[j],1);
 	}
+	
 }       
