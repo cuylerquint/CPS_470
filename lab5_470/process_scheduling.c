@@ -21,6 +21,16 @@ Lab 5
 #include <stdlib.h>
 #include <pthread.h>
 
+
+typedef struct thread {   
+	pthread_t thread_id;       
+ 	int pid;
+	int arrival;
+	int burst;
+	int priority;
+}Process;
+
+
 int main(){
     FILE *fp;
     int scanned = 0;
