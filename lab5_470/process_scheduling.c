@@ -22,27 +22,39 @@ Lab 5
 #include <pthread.h>
 
 
-typedef struct thread {   
-	pthread_t thread_id;       
+struct Process{   
  	int pid;
 	int arrival;
 	int burst;
 	int priority;
-}Process;
+};
 
+typedef struct Process Process;
 
 int main(){
-    FILE *fp;
-    int scanned = 0;
-    int some_ints[5];
-    fp = fopen("data.txt", "r");
-    while ((scanned = fscanf(fp, "%d %d %d %d", some_ints, some_ints+1, some_ints+2, some_ints+3)) !=  EOF) {
-        if(scanned ==4){
-            printf("%d %d %d %d\n", some_ints[0], some_ints[1], some_ints[2], some_ints[3]);
-        }
-        else {
-            printf("Whoops! Input format is incorrect!\n");
-            break;
-        }
-    } 
+    	FILE *fp;
+    	int scanned = 0;
+    	int some_ints[5];
+	Process jobs[5];	
+    	fp = fopen("data.txt", "r");
+	int i = 0;
+	while ((scanned = fscanf(fp, "%d %d %d %d", some_ints, some_ints+1, some_ints+2, some_ints+3)) !=  EOF) {
+        	if(scanned ==4){
+			printf("%d %d %d %d\n", some_ints[0], some_ints[1], some_ints[2], some_ints[3]);
+			jobs[i].pid = some_ints[0];
+			jobs[i].arrival = some_ints[1];
+			jobs[i].burst = some_ints[2];
+			jobs[i].priority = some_ints[3];
+			i += 1;
+        	}
+        	else 
+		{
+			printf("Whoops! Input format is incorrect!\n");
+            		break;
+        	}
+	} 
+	for(int j = 0; j < 5; j ++){
+		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
+	
+	}
 }       
