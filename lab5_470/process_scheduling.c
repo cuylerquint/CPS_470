@@ -37,6 +37,89 @@ void execute(Process * self, int quantum)
 }
 
 
+
+typedef struct Node {
+	Process process;
+    	struct Node* next;
+} Node;
+
+typedef struct Queue {
+    	Node* head;
+    	Node* tail;
+
+    	void (*push) (struct Queue*, Process*); // add item to tail
+    	Process (*pop) (struct Queue*);
+    	int (*peek) (struct Queue*);
+    	void (*display) (struct Queue*);
+    	int size;
+} Queue;
+
+void push (Queue* queue, Process * p);
+Process pop (Queue* queue);
+int peek (Queue* queue);
+void display (Queue* queue);
+
+void push (Queue* queue, Process * p) {
+	Node* n = (Node*) malloc (sizeof(Node));
+    	n->process = *p;
+    	n->next = NULL;
+
+    	if (queue->head == NULL) { // no head
+        	queue->head = n;
+    	}
+	else
+	{
+        	queue->tail->next = n;
+    	}
+    	queue->tail = n;
+    	queue->size++;
+}
+
+Process pop (Queue* queue) {
+    	Node* head = queue->head;
+    	Process p  = head->process;
+    	queue->head = head->next;
+    	queue->size--;
+    	free(head);
+    	return p;
+}
+
+int peek (Queue* queue) {
+    	Node* head = queue->head;
+    	return head->process.pid;
+}
+void display (Queue* queue) {
+    	printf("\nDisplay: ");
+    // no item
+    	if (queue->size == 0)
+        	printf("No item in queue.\n");
+    	else { // has item(s)
+        	Node* head = queue->head;
+        	int i, size = queue->size;
+        	printf("%d item(s):\n", queue->size);
+        	for (i = 0; i < size; i++) {
+            		if (i > 0)
+                		printf(", ");
+            		printf("%d", head->process.pid);
+            		head = head->next;
+        	}
+    	}
+    	printf("\n\n");
+}
+
+Queue createQueue () {
+	Queue queue;
+    	queue.size = 0;
+    	queue.head = NULL;
+    	queue.tail = NULL;
+    	queue.push = &push;
+    	queue.pop = &pop;
+    	queue.peek = &peek;
+    	queue.display = &display;
+    	return queue;
+}
+
+
 int fcfs_compare(const void *s1, const void *s2)
 {
 	Process *p1 = (Process *)s1;
@@ -51,7 +134,6 @@ int sj_compare(const void *s1, const void *s2)
 	return p1->burst - p2->burst;
 }
 
-//typedef struct Process Process;
 void run_process(void *arg)
 {
 	Process *jobs = arg;
@@ -82,12 +164,18 @@ void run_process(void *arg)
 		//queue like sjb, then loop for given qautam
 		printf("Round Robin");
 	}
+ 	Queue queue = createQueue();
+    	queue.display(&queue);
+
+    	
+
 
 	for(int j = 0; j < 5; j ++){
 		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
+    		queue.push(&queue, &jobs[j]);    
 		jobs[j].execute(&jobs[j],1);
 	}
-
+    		queue.display(&queue);
 }
 int main(){
     	FILE *fp;
