@@ -173,10 +173,14 @@ void run_process(void *arg)
 	for(int j = 0; j < 5; j ++){
 		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
     		queue.push(&queue, &jobs[j]);    
-		jobs[j].execute(&jobs[j],1);
 	}
     		queue.display(&queue);
-}
+		while(queue.size != 0)
+		{
+			Process temp = queue.pop(&queue);
+			temp.execute(&temp,1);
+		}	
+}		
 int main(){
     	FILE *fp;
     	int scanned = 0;
