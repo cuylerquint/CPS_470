@@ -36,6 +36,21 @@ void execute(Process * self, int quantum)
 
 }
 
+
+int fcfs_compare(const void *s1, const void *s2)
+{
+	Process *p1 = (Process *)s1;
+	Process *p2 = (Process *)s2;
+	return p1->arrival - p2->arrival;
+}
+
+int sj_compare(const void *s1, const void *s2)
+{
+	Process *p1 = (Process *)s1;
+	Process *p2 = (Process *)s2;
+	return p1->burst - p2->burst;
+}
+
 //typedef struct Process Process;
 void run_process(void *arg)
 {
@@ -43,10 +58,30 @@ void run_process(void *arg)
 	printf("\nSelect Scheduling Algorithm");
 	printf("\n1) FCFS");
 	printf("\n2) SJF");
-	printf("\n3) RR");
+	printf("\n3) RR\n");
 
 	int select;
 	scanf("%d",&select);
+
+	if(select == 1)
+	{
+		qsort(jobs, 5, sizeof(Process), fcfs_compare);
+
+		//sort by arrival
+		printf("First Come");
+	}
+	else if(select == 2)
+	{
+		qsort(jobs, 5, sizeof(Process), sj_compare);
+		//sort by busrt
+		printf("Shortest Job First");
+	}
+	else
+	{
+		qsort(jobs, 5, sizeof(Process), sj_compare);
+		//queue like sjb, then loop for given qautam
+		printf("Round Robin");
+	}
 
 	for(int j = 0; j < 5; j ++){
 		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
@@ -78,7 +113,9 @@ int main(){
         	}
 	} 
 	pthread_t scheduler;	
+	int av_turn_around = 0;
    	pthread_create(&scheduler, NULL, (void *) run_process, (void *) jobs);
-	
     	pthread_join(scheduler, NULL);
+	printf("\nFinished Processing Jobs");
+	printf("\n Average Turn around time : %d\n",av_turn_around);
 }       
