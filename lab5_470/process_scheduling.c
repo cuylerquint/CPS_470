@@ -37,7 +37,23 @@ void execute(Process * self, int quantum)
 }
 
 //typedef struct Process Process;
+void run_process(void *arg)
+{
+	Process *jobs = arg;
+	printf("\nSelect Scheduling Algorithm");
+	printf("\n1) FCFS");
+	printf("\n2) SJF");
+	printf("\n3) RR");
 
+	int select;
+	scanf("%d",&select);
+
+	for(int j = 0; j < 5; j ++){
+		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
+		jobs[j].execute(&jobs[j],1);
+	}
+
+}
 int main(){
     	FILE *fp;
     	int scanned = 0;
@@ -58,12 +74,11 @@ int main(){
         	else 
 		{
 			printf("Whoops! Input format is incorrect!\n");
-            		break;
+          		break;
         	}
 	} 
-	for(int j = 0; j < 5; j ++){
-		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
-		jobs[j].execute(&jobs[j],1);
-	}
+	pthread_t scheduler;	
+   	pthread_create(&scheduler, NULL, (void *) run_process, (void *) jobs);
 	
+    	pthread_join(scheduler, NULL);
 }       
