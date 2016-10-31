@@ -31,7 +31,7 @@ typedef struct{
 
 void execute(Process * self, int quantum)
 {
-	printf("\nProcess: %d executeing for %d",self->pid,quantum);
+	printf("\nProcess: %d executeing for %d, process has %d time left",self->pid,quantum, self->burst);
 	sleep(quantum);	
 
 }
@@ -166,20 +166,31 @@ void run_process(void *arg)
 	}
  	Queue queue = createQueue();
     	queue.display(&queue);
-
-    	
-
-
 	for(int j = 0; j < 5; j ++){
 		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
     		queue.push(&queue, &jobs[j]);    
 	}
-    		queue.display(&queue);
+    	queue.display(&queue);
+	if(select == 3)
+	{
+		while(queue.size != 0)
+		{
+			Process temp = queue.pop(&queue);
+			temp.execute(&temp,1);
+			temp.burst -= 10;
+			if(temp.burst > 0)
+				queue.push(&queue,&temp);
+		}			
+
+	}
+	else
+	{
 		while(queue.size != 0)
 		{
 			Process temp = queue.pop(&queue);
 			temp.execute(&temp,1);
 		}	
+	}
 }		
 int main(){
     	FILE *fp;
