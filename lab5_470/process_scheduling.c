@@ -3,24 +3,27 @@ Cuyler Quint
 CPS 470
 Lab 5
 
-	Implement process scheduling via FCFS, SJB, RR
+	Implement process scheduling for the following algorithms
+		1) FCFS
+		2) SJB
+		3) RR
 
-	input: 
+	input(only numbers by tab, no desciptions):
 	pid	arrival time	burst	priority
 	1	2		87	3		
 
 	Running:
 		./a.out
-	
-	prints to console and stores results in thrid argument to progarm
-
-
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 double ave_turn_around = 0, ave_wait = 0;
+
+/**
+	Structs for Process and Queue to handle scheduling
+*/
 typedef struct{   
  	int pid;
 	int arrival;
@@ -135,7 +138,17 @@ int sj_compare(const void *s1, const void *s2)
 	return p1->burst - p2->burst;
 }
 
-void run_process(void *arg)
+
+/**
+ * CPU scheduler.
+ * 
+ * The process at the front of the ready queue is schedule to run
+ * up to "quantum" amount of time. If not finished, it is moved to
+ * the end of the queue.
+ * 
+ */
+
+void run_scheduler(void *arg)
 {
 	Process *jobs = arg;
 	printf("\nSelect Scheduling Algorithm");
@@ -184,6 +197,7 @@ void run_process(void *arg)
 			Process temp = queue.pop(&queue);
 			temp.execute(&temp,10);
 			temp.burst -= 10;
+			running_clock += 10;
 			if(temp.burst > 0)
 				queue.push(&queue,&temp);
 			else
@@ -235,6 +249,15 @@ void run_process(void *arg)
 
 }		
 
+/**
+ * Driver of CPU scheduling
+ * 
+ *  Scans in data from file and creates Process objects then starts a thread 
+ *  with the given jobs to complete with the run_scheduler function
+ * 
+ */
+
+
 int main(){
     	FILE *fp;
     	int scanned = 0;
@@ -254,7 +277,7 @@ int main(){
 	} 
 	pthread_t scheduler;	
 	int av_turn_around = 0;
-   	pthread_create(&scheduler, NULL, (void *) run_process, (void *) jobs);
+   	pthread_create(&scheduler, NULL, (void *) run_scheduler, (void *) jobs);
     	pthread_join(scheduler, NULL);
 	printf("\n\nFinished Processing Jobs\n");
 	printf("Average Turn around time : %f\n",(ave_turn_around/i));
