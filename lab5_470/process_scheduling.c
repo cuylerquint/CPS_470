@@ -20,19 +20,20 @@ Lab 5
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-
+double ave_turn_around = 0, ave_wait = 0;
 typedef struct{   
  	int pid;
 	int arrival;
 	int burst;
 	int priority;
+	int comp_time;
 	void (*execute)();
 }Process;
 
 void execute(Process * self, int quantum)
 {
 	printf("\nProcess: %d executeing for %d, process has %d time left",self->pid,quantum, self->burst);
-	sleep(quantum);	
+	usleep(quantum);	
 
 }
 
@@ -55,7 +56,7 @@ typedef struct Queue {
 } Queue;
 
 void push (Queue* queue, Process * p);
-Process pop (Queue* queue);
+Process  pop (Queue* queue);
 int peek (Queue* queue);
 void display (Queue* queue);
 
@@ -160,38 +161,80 @@ void run_process(void *arg)
 	}
 	else
 	{
-		qsort(jobs, 5, sizeof(Process), sj_compare);
-		//queue like sjb, then loop for given qautam
+		qsort(jobs, 5, sizeof(Process), fcfs_compare);
 		printf("Round Robin");
 	}
  	Queue queue = createQueue();
-    	queue.display(&queue);
+	int max_burst = 0;
 	for(int j = 0; j < 5; j ++){
-		printf("\nPID: %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
+		printf("\nPushing Process %d Arr: %D Burst: %d Pri: %d",jobs[j].pid,jobs[j].arrival,jobs[j].burst,jobs[j].priority);
+		jobs[j].comp_time = 4;
     		queue.push(&queue, &jobs[j]);    
+		if(jobs[j].burst > max_burst)
+			max_burst = jobs[j].burst;
 	}
-    	queue.display(&queue);
-	if(select == 3)
+	// turn around = finished - arrival, wait = turn around - burst	
+	int running_clock = 0, comp_time,turn_around, wait;
+	if(select == 3) // RR
+	{
+		int orig_burst;
+		while(queue.size != 0)
+		{
+
+			Process temp = queue.pop(&queue);
+			temp.execute(&temp,10);
+			temp.burst -= 10;
+			if(temp.burst > 0)
+				queue.push(&queue,&temp);
+			else
+			{
+				for(int i = 0; i < 5; i ++){
+					if(jobs[i].pid == temp.pid)
+						orig_burst = jobs[i].burst;					
+				}
+				comp_time = running_clock + temp.burst;
+				turn_around = comp_time - temp.arrival;
+				wait = turn_around - orig_burst;
+				ave_turn_around += turn_around;
+				ave_wait += wait;
+			}			
+			
+		}			
+	}
+	else if(select == 2) //shortest
 	{
 		while(queue.size != 0)
 		{
 			Process temp = queue.pop(&queue);
-			temp.execute(&temp,1);
-			temp.burst -= 10;
-			if(temp.burst > 0)
-				queue.push(&queue,&temp);
-		}			
-
+			temp.execute(&temp,max_burst);
+			comp_time = running_clock + temp.burst;
+			turn_around = comp_time - 0;
+			wait = turn_around - temp.burst;
+			ave_turn_around += turn_around;
+			ave_wait += wait;
+			printf("\nProcess %d Turn Around: %D Wait: %d",temp.pid,turn_around,wait);	
+			running_clock += max_burst;	
+		}	
 	}
 	else
 	{
 		while(queue.size != 0)
 		{
 			Process temp = queue.pop(&queue);
-			temp.execute(&temp,1);
+			temp.execute(&temp,max_burst);
+			comp_time = running_clock + temp.burst;
+			turn_around = comp_time - temp.arrival;
+			wait = turn_around - temp.burst;
+			ave_turn_around += turn_around;
+			ave_wait += wait;
+			printf("\nProcess %d Turn Around: %D Wait: %d",temp.pid,turn_around,wait);	
+			running_clock += max_burst;	
+
 		}	
 	}
+
 }		
+
 int main(){
     	FILE *fp;
     	int scanned = 0;
@@ -201,7 +244,6 @@ int main(){
 	int i = 0;
 	while ((scanned = fscanf(fp, "%d %d %d %d", some_ints, some_ints+1, some_ints+2, some_ints+3)) !=  EOF) {
         	if(scanned ==4){
-			printf("%d %d %d %d\n", some_ints[0], some_ints[1], some_ints[2], some_ints[3]);
 			jobs[i].pid = some_ints[0];
 			jobs[i].arrival = some_ints[1];
 			jobs[i].burst = some_ints[2];
@@ -209,16 +251,12 @@ int main(){
 			jobs[i].execute = &execute;
 			i += 1;
         	}
-        	else 
-		{
-			printf("Whoops! Input format is incorrect!\n");
-          		break;
-        	}
 	} 
 	pthread_t scheduler;	
 	int av_turn_around = 0;
    	pthread_create(&scheduler, NULL, (void *) run_process, (void *) jobs);
     	pthread_join(scheduler, NULL);
-	printf("\nFinished Processing Jobs");
-	printf("\n Average Turn around time : %d\n",av_turn_around);
+	printf("\n\nFinished Processing Jobs\n");
+	printf("Average Turn around time : %f\n",(ave_turn_around/i));
+	printf("Average Wait time : %f\n",(ave_wait/i));
 }       
