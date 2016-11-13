@@ -27,7 +27,6 @@ int main(){
 	int count = 0, safe = 0;
 	fscanf(fp, "%d,", &num_proc);
 	fscanf(fp, "%d,", &num_res);
-//	int allocation[num_proc][num_res], max[num_proc][num_res],need[num_proc][num_res], res_avail[num_res], request[num_proc][num_res],finished[num_proc];
 	printf("Number of Process:%d\n",num_proc);
 	printf("Number of Resouces:%d\n",num_res);
 
@@ -38,13 +37,16 @@ int main(){
     	int cur_alloc[num_res];
     	int res_avail[num_res];
     	int running[5];
- 
+
+   	for(int i = 0;i < num_res; i++)
+   		cur_alloc[i]=0;
+
 
   	for(int i = 0;i < num_proc; i++)
    		running[i]=1;
 		count++;                             	
 	
-	printf("\nallocation matrix:");	
+	printf("\nallocation matrix:\n");	
 	for(int i = 0; i < num_proc;i++)
 	{
 		for(int j =0;j< num_res;j++)
@@ -55,7 +57,7 @@ int main(){
 		}
 		printf("\n");
 	}						
-	printf("\nmax matrix:");	
+	printf("\nmax matrix:\n");	
 	for(int i = 0; i < num_proc;i++)
 	{
 		for(int j =0;j< num_res;j++)
@@ -67,7 +69,7 @@ int main(){
 		printf("\n");
 	}						
 
-	printf("\nres avil:");	
+	printf("\nres avil:\n");	
 	for(int j =0;j< num_res;j++)
 	{
 		fscanf(fp, "%d,", &temp);
@@ -75,7 +77,7 @@ int main(){
 		printf("%d ",res_avail[j]);
 	}	
 
-	printf("\nrequest matrix:");	
+	printf("\nrequest matrix:\n");	
 	for(int i = 0; i < num_proc;i++)
 	{
 		for(int j =0;j< num_res;j++)
@@ -93,7 +95,7 @@ int main(){
         for (i = 0; i < num_res; i++)
             	printf("%d ", cur_alloc[i]);
 	 for(i = 0; i < num_res;i++)
-		need[i] = res_avail[i]-cur_alloc[i];				
+		need[i] = res_avail[i] - cur_alloc[i];				
 
        	printf("\nAvailble: ");
        	for (i = 0; i < num_res; i++)
@@ -113,7 +115,7 @@ int main(){
 				executing = 1;
 				for(j = 0; j < num_res;j++)
 				{	
-					if(max[j][i] - allocation[i][j] > need[j])
+					if(max[i][j] - allocation[i][j] > need[j])
 					{
 						executing = 0;
 						printf("Request not granted"); 				
